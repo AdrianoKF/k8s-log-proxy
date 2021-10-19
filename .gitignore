@@ -5,6 +5,8 @@
 *.so
 *.dylib
 
+k8s-log-proxy
+
 # Test binary, built with `go test -c`
 *.test
 
