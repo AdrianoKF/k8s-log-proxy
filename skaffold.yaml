@@ -1,0 +1,9 @@
+apiVersion: skaffold/v2beta22
+kind: Config
+build:
+  artifacts:
+  - image: k8s-log-proxy
+deploy:
+  kubectl:
+    manifests:
+      - deploy/*.yaml
