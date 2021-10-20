@@ -17,6 +17,6 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         logout: true
     - name: Build Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/adrianokf/k8s-log-proxy:${{ github.ref }}
+      run: docker build . --file Dockerfile --tag ghcr.io/adrianokf/k8s-log-proxy:main
     - name: Publish Docker image
-      run: docker push ghcr.io/adrianokf/k8s-log-proxy:${{ github.ref }}
+      run: docker push ghcr.io/adrianokf/k8s-log-proxy:main
