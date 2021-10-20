@@ -1,18 +1,22 @@
 name: Docker Image CI
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag k8s-log-proxy:$(date +%s)
+    - name: Docker Login
+      uses: docker/login-action@v1.10.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        logout: true
+    - name: Build Docker image
+      run: docker build . --file Dockerfile --tag ghcr.io/AdrianoKF/k8s-log-proxy:${{ env.GITHUB_REF }}
+    - name: Publish Docker image
+      run: docker push ghcr.io/AdrianoKF/k8s-log-proxy:${{ env.GITHUB_REF }}
