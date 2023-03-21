@@ -49,6 +49,7 @@ spec:
       containers:
       - name: proxy
         image: k8s-log-proxy
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
           name: http

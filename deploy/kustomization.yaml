@@ -1,0 +1,6 @@
+bases:
+  - base/k8s.yaml
+
+images:
+  - name: k8s-log-proxy
+    newName: k3d-splat-registry.192.168.178.21.nip.io:5123/k8s-log-proxy
