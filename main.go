@@ -2,26 +2,22 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"path/filepath"
 	"strings"
 
+	"github.com/adrianokf/k8s-log-proxy/internal/k8s"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 var lineReadLimit int64 = 8192
 
 func main() {
-	config, err := readKubeConfig()
+	config, err := k8s.ReadKubeConfig()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -32,30 +28,6 @@ func main() {
 
 	http.HandleFunc("/", makeHandler(client))
 	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func readKubeConfig() (*rest.Config, error) {
-	// Attempt to read in-cluster config
-	config, _ := rest.InClusterConfig()
-	if config != nil {
-		return config, nil
-	}
-
-	// Attempt to build config from kubeconfig file
-	var kubeconfig *string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	}
-	flag.Parse()
-
-	// use the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
-	if err != nil {
-		return nil, err
-	}
-	return config, nil
 }
 
 func readLogs(client kubernetes.Interface, namespace, podID string, logOptions *v1.PodLogOptions) (string, error) {
