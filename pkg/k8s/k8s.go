@@ -1,10 +1,10 @@
 package k8s
 
 import (
-	"flag"
 	"os"
 	"path/filepath"
 
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
@@ -25,11 +25,9 @@ func ReadKubeConfig() (*rest.Config, error) {
 		kubeconfig = &val
 	} else {
 		if home := homedir.HomeDir(); home != "" {
-			kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
-		} else {
-			kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+			val := filepath.Join(home, ".kube", "config")
+			kubeconfig = &val
 		}
-		flag.Parse()
 	}
 
 	// use the current context in kubeconfig
@@ -38,4 +36,14 @@ func ReadKubeConfig() (*rest.Config, error) {
 		return nil, err
 	}
 	return config, nil
+}
+
+// MakeK8sClient creates a Kubernetes client for the current environment
+func MakeK8sClient() (*kubernetes.Clientset, error) {
+	config, err := ReadKubeConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	return kubernetes.NewForConfig(config)
 }
