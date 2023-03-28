@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 
 	"github.com/adrianokf/k8s-log-proxy/pkg/k8s"
@@ -31,6 +32,26 @@ func ReadAppConfigFromK8s(namespace, configMap string) (*AppConfig, error) {
 	}
 
 	err = json.Unmarshal([]byte(cm.Data["config.json"]), &appConfig)
+	if err != nil {
+		return nil, err
+	}
+	return &appConfig, nil
+}
+
+const DEFAULT_CONFIG_FILE = "/config.json"
+
+// ReadAppConfigFromFile reads and parses the application config from a config file
+func ReadAppConfigFromFile() (*AppConfig, error) {
+	appConfig := AppConfig{
+		AllowedNamespaces: make([]string, 0),
+	}
+
+	data, err := ioutil.ReadFile(DEFAULT_CONFIG_FILE)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(data, &appConfig)
 	if err != nil {
 		return nil, err
 	}

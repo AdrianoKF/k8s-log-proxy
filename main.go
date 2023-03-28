@@ -28,6 +28,9 @@ func main() {
 	}
 
 	http.HandleFunc("/", makeHandler(client))
+	http.HandleFunc("/.healthz/", func(w http.ResponseWriter, req *http.Request) {
+		fmt.Fprintf(w, "OK")
+	})
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 

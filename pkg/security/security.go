@@ -7,7 +7,7 @@ import (
 )
 
 func CheckPermissions(namespace, podId string) (bool, error) {
-	appConfig, err := config.ReadAppConfigFromK8s("default", "k8s-log-proxy-config")
+	appConfig, err := config.ReadAppConfigFromFile()
 	if err != nil {
 		return false, err
 	}
