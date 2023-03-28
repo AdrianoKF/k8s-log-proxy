@@ -1,0 +1,15 @@
+apiVersion: v2
+type: application
+
+name: k8s-log-proxy
+description: Helm chart for k8s-log-proxy
+maintainers:
+  - name: AdrianoKF
+    url: "https://github.com/AdrianoKF"
+home: "https://github.com/AdrianoKF/k8s-log-proxy"
+sources:
+  - "https://github.com/AdrianoKF/k8s-log-proxy.git"
+
+version: 0.1.0
+
+appVersion: "main"

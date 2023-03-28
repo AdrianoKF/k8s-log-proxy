@@ -2,12 +2,15 @@ apiVersion: skaffold/v3
 kind: Config
 build:
   artifacts:
-    - image: k3d-splat-registry.192.168.178.21.nip.io:5123/k8s-log-proxy
+    - image: logproxy
+  # cluster: {}
   local:
     push: true
-manifests:
-  kustomize:
-    paths:
-      - ./deploy
 deploy:
-  kubectl: {}
+  helm:
+    releases:
+      - name: k8s-log-proxy-dev
+        chartPath: deploy/chart/k8s-log-proxy
+        setValueTemplates:
+          image.repository: "{{.IMAGE_REPO}}"
+          image.tag: "{{.IMAGE_TAG}}@{{.IMAGE_DIGEST}}"

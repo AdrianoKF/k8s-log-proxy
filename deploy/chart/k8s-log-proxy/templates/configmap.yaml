@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "k8s-log-proxy.fullname" . }}
+  labels:
+    {{- include "k8s-log-proxy.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+    config.json: {{ quote .Values.appConfig }}
