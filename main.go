@@ -28,7 +28,10 @@ func main() {
 	}
 
 	http.HandleFunc("/", makeHandler(client))
-	http.HandleFunc("/.healthz/", func(w http.ResponseWriter, req *http.Request) {
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "resources/favicon.ico")
+	})
+	http.HandleFunc("/.healthz/", func(w http.ResponseWriter, _ *http.Request) {
 		fmt.Fprintf(w, "OK")
 	})
 	log.Fatal(http.ListenAndServe(":8080", nil))
