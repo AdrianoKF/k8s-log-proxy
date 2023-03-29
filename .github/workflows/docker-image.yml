@@ -1,10 +1,16 @@
 name: Docker Image
 on:
   push:
-    branches: [ main ]
+    branches:
+      - "**"
+    tags:
+      - "v*.*.*"
+  pull_request:
+    branches:
+      - "main"
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: uuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Docker Login
@@ -16,10 +22,16 @@ jobs:
         logout: true
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ghcr.io/adrianokf/k8s-log-proxy
     - name: Build and push
       uses: docker/build-push-action@v4
       with:
         context: .
         file: ./Dockerfile
-        push: true
-        tags: ghcr.io/adrianokf/k8s-log-proxy:main
+        push: ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') }}  # Only push on tags
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
