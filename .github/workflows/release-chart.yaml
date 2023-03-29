@@ -1,8 +1,7 @@
 name: Release Helm charts
 on:
   push:
-    branches:
-    - main
+    tags: ["*"]
 jobs:
   release:
     runs-on: ubuntu-latest
