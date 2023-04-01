@@ -3,6 +3,7 @@ module github.com/adrianokf/k8s-log-proxy
 go 1.20
 
 require (
+	github.com/gobwas/glob v0.2.3
 	k8s.io/apimachinery v0.26.3
 	k8s.io/client-go v0.26.3
 )
