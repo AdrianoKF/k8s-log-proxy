@@ -26,7 +26,7 @@ func checkNamespace(namespace string, allowedNamespaces []string) bool {
 }
 
 func CheckPermissions(namespace, podId string) (bool, error) {
-	appConfig, err := config.ReadAppConfigFromFile()
+	appConfig, err := config.ReadConfig()
 	if err != nil {
 		return false, err
 	}

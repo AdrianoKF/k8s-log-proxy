@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/adrianokf/k8s-log-proxy/pkg/config"
 	"github.com/adrianokf/k8s-log-proxy/pkg/k8s"
 	"github.com/adrianokf/k8s-log-proxy/pkg/logs"
 	"github.com/adrianokf/k8s-log-proxy/pkg/security"
@@ -18,19 +19,30 @@ import (
 var lineReadLimit int64 = 8192
 
 func main() {
-	config, err := k8s.ReadKubeConfig()
+	kubeconfig, err := k8s.ReadKubeConfig()
 	if err != nil {
 		panic(err.Error())
 	}
-	client, err := kubernetes.NewForConfig(config)
+	client, err := kubernetes.NewForConfig(kubeconfig)
 	if err != nil {
 		panic(err.Error())
 	}
 
+	appConfig, err := config.ReadConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	log.Printf("%+v\n", appConfig)
+
+	// Main app
 	http.HandleFunc("/", makeHandler(client))
+
+	// Favicon
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "resources/favicon.ico")
 	})
+
+	// Kubernetes health check endpoints
 	http.HandleFunc("/.healthz/", func(w http.ResponseWriter, _ *http.Request) {
 		fmt.Fprintf(w, "OK")
 	})

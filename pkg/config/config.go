@@ -1,59 +1,26 @@
 package config
 
 import (
-	"context"
-	"encoding/json"
-	"io/ioutil"
-	"log"
-
-	"github.com/adrianokf/k8s-log-proxy/pkg/k8s"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/spf13/viper"
 )
 
 type AppConfig struct {
-	AllowedNamespaces []string `json:"allowedNamespaces"`
+	AllowedNamespaces []string
 }
 
-// ReadAppConfigFromK8s reads and parses the application config from a Kubernetes configmap
-func ReadAppConfigFromK8s(namespace, configMap string) (*AppConfig, error) {
-	client, err := k8s.MakeK8sClient()
-	if err != nil {
-		return nil, err
+const CONFIG_NAME = "config"
+
+// ReadConfig reads and parses the application config from a `config.*` file found in either the current working directory or the root directory
+func ReadConfig() (appConfig AppConfig, err error) {
+	viper.SetConfigName(CONFIG_NAME)
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("/")
+	if err = viper.ReadInConfig(); err != nil {
+		return
 	}
 
-	appConfig := AppConfig{
-		AllowedNamespaces: make([]string, 0),
+	if err = viper.Unmarshal(&appConfig); err != nil {
+		return
 	}
-
-	cm, err := client.CoreV1().ConfigMaps(namespace).Get(context.TODO(), configMap, v1.GetOptions{})
-	if err != nil {
-		log.Printf("Application ConfigMap '%v' not accessible in namespace '%v', using defaults\n", configMap, namespace)
-		return &appConfig, nil
-	}
-
-	err = json.Unmarshal([]byte(cm.Data["config.json"]), &appConfig)
-	if err != nil {
-		return nil, err
-	}
-	return &appConfig, nil
-}
-
-const DEFAULT_CONFIG_FILE = "/config.json"
-
-// ReadAppConfigFromFile reads and parses the application config from a config file
-func ReadAppConfigFromFile() (*AppConfig, error) {
-	appConfig := AppConfig{
-		AllowedNamespaces: make([]string, 0),
-	}
-
-	data, err := ioutil.ReadFile(DEFAULT_CONFIG_FILE)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(data, &appConfig)
-	if err != nil {
-		return nil, err
-	}
-	return &appConfig, nil
+	return
 }
