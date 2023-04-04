@@ -74,7 +74,5 @@ tolerations: []
 
 affinity: {}
 
-appConfig: |
-  {
-    "allowedNamespaces": ["default"]
-  }
+appConfig:
+  allowedNamespaces: ["*"]

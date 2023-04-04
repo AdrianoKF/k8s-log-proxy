@@ -9,4 +9,5 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 data:
-    config.json: {{ quote .Values.appConfig }}
+    config.yaml: |
+      {{- tpl (toYaml .Values.appConfig) . | nindent 8 }}

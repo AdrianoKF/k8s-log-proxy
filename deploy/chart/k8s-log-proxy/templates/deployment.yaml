@@ -10,8 +10,9 @@ spec:
       {{- include "k8s-log-proxy.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -46,8 +47,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: app-config
-              subPath: config.json
-              mountPath: /config.json
+              subPath: config.yaml
+              mountPath: /config.yaml
       volumes:
       - name: app-config
         configMap:
