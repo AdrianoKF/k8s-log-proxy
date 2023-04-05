@@ -3,6 +3,7 @@ module github.com/adrianokf/k8s-log-proxy
 go 1.20
 
 require (
+	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gobwas/glob v0.2.3
 	github.com/spf13/viper v1.15.0
 	k8s.io/apimachinery v0.26.3
@@ -11,7 +12,6 @@ require (
 
 require (
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
 	github.com/go-openapi/swag v0.19.14 // indirect
