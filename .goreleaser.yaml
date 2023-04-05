@@ -1,6 +1,7 @@
 before:
   hooks:
     - go mod tidy
+
 builds:
   - env:
       - CGO_ENABLED=0
@@ -23,10 +24,26 @@ archives:
     format_overrides:
     - goos: windows
       format: zip
+
+dockers:
+  - dockerfile: goreleaser.Dockerfile
+    image_templates:
+    - ghcr.io/adrianokf/{{.ProjectName}}
+    build_flag_templates:
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.title={{.ProjectName}}"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--label=org.opencontainers.image.authors='Adrian Rumpold <a.rumpold@gmail.com>'"
+    - "--label=org.opencontainers.image.licenses=MIT"
+    - "--label=org.opencontainers.image.url=https://github.com/AdrianoKF/{{.ProjectName}}"
+
 checksum:
   name_template: 'checksums.txt'
+
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
+
 changelog:
   sort: asc
   filters:
