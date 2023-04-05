@@ -28,11 +28,8 @@ func main() {
 		panic(err.Error())
 	}
 
-	appConfig, err := config.ReadConfig()
-	if err != nil {
-		panic(err.Error())
-	}
-	log.Printf("%+v\n", appConfig)
+	config.Init()
+	log.Printf("%+v\n", config.Config)
 
 	// Main app
 	http.HandleFunc("/", makeHandler(client))

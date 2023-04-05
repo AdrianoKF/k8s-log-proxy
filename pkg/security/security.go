@@ -26,15 +26,10 @@ func checkNamespace(namespace string, allowedNamespaces []string) bool {
 }
 
 func CheckPermissions(namespace, podId string) (bool, error) {
-	appConfig, err := config.ReadConfig()
-	if err != nil {
-		return false, err
-	}
-
 	// Only allow pods in allowlisted namespaces
-	isAllowed := checkNamespace(namespace, appConfig.AllowedNamespaces)
+	isAllowed := checkNamespace(namespace, config.Config.AllowedNamespaces)
 	if isAllowed {
 		return true, nil
 	}
-	return false, fmt.Errorf("forbidden: namespace '%v' not in %v", namespace, appConfig.AllowedNamespaces)
+	return false, fmt.Errorf("forbidden: namespace '%v' not in %v", namespace, config.Config.AllowedNamespaces)
 }
