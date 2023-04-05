@@ -7,7 +7,7 @@ on:
     branches:
       - "main"
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -26,17 +26,23 @@ jobs:
     - uses: actions/setup-go@v4
       with:
         go-version: stable
-    - name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ghcr.io/adrianokf/k8s-log-proxy
-
+  build:
+    runs-on: ubuntu-latest
+    needs: [prepare]
+    if: ${{ !contains(github.ref, 'refs/tags/') }}
+    steps:
     - uses: goreleaser/goreleaser-action@v4
-      env:
-        GORELEASER_ACTION: ${{ contains(github.ref, 'refs/tags/') && 'release' || 'build --snapshot' }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         distribution: goreleaser
         version: latest
-        args: ${{ env.GORELEASER_ACTION }} --clean
+        args: release --skip-publish --clean
+  publish:
+    runs-on: ubuntu-latest
+    needs: [prepare]
+    if: ${{ contains(github.ref, 'refs/tags/') }}
+    steps:
+    - uses: goreleaser/goreleaser-action@v4
+      with:
+        distribution: goreleaser
+        version: latest
+        args: release --clean
