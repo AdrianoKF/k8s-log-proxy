@@ -1,8 +1,6 @@
 name: Goreleaser
 on:
   push:
-    branches:
-      - "**"
     tags:
       - "*"
   pull_request:
@@ -36,7 +34,7 @@ jobs:
 
     - uses: goreleaser/goreleaser-action@v4
       env:
-        GORELEASER_ACTION: ${{ contains(github.ref, 'refs/tags/') && 'release' || 'build' }}
+        GORELEASER_ACTION: ${{ contains(github.ref, 'refs/tags/') && 'release' || 'build --snapshot' }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         distribution: goreleaser
