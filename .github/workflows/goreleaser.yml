@@ -26,22 +26,20 @@ jobs:
     - uses: actions/setup-go@v4
       with:
         go-version: stable
-  build:
-    runs-on: ubuntu-latest
-    needs: [prepare]
-    if: ${{ !contains(github.ref, 'refs/tags/') }}
-    steps:
+    # Skip publishing on non-tags
     - uses: goreleaser/goreleaser-action@v4
+      if: ${{ !contains(github.ref, 'refs/tags/') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         distribution: goreleaser
         version: latest
         args: release --skip-publish --clean
-  publish:
-    runs-on: ubuntu-latest
-    needs: [prepare]
-    if: ${{ contains(github.ref, 'refs/tags/') }}
-    steps:
+    # Publish on tags
     - uses: goreleaser/goreleaser-action@v4
+      if: ${{ contains(github.ref, 'refs/tags/') }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         distribution: goreleaser
         version: latest
