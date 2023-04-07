@@ -29,6 +29,8 @@ dockers:
   - dockerfile: goreleaser.Dockerfile
     image_templates:
     - ghcr.io/adrianokf/{{.ProjectName}}
+    - ghcr.io/adrianokf/{{.ProjectName}}:{{.Tag}}
+    - ghcr.io/adrianokf/{{.ProjectName}}:v{{.Major}}.{{.Minor}}
     build_flag_templates:
     - "--label=org.opencontainers.image.created={{.Date}}"
     - "--label=org.opencontainers.image.title={{.ProjectName}}"
