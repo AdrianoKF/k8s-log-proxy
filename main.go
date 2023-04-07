@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/adrianokf/k8s-log-proxy/pkg/config"
 	"github.com/adrianokf/k8s-log-proxy/pkg/k8s"
@@ -17,6 +16,12 @@ import (
 )
 
 var lineReadLimit int64 = 8192
+
+func LogError(w http.ResponseWriter, statusCode int, msg string) {
+	w.WriteHeader(statusCode)
+	fmt.Fprintln(w, msg)
+	log.Println(msg)
+}
 
 func main() {
 	kubeconfig, err := k8s.ReadKubeConfig()
@@ -49,34 +54,29 @@ func main() {
 func makeHandler(client kubernetes.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("URL: %s\n", r.URL.Path)
-		parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/logs/"), "/")
-		if len(parts) != 2 {
-			return
-		}
-		namespace, podName := parts[0], parts[1]
-		if namespace == "" || podName == "" {
-			return
-		}
 
-		_, err := security.CheckPermissions(namespace, podName)
+		target, err := logs.ParseUrl(r.URL.Path)
 		if err != nil {
-			w.WriteHeader(http.StatusForbidden)
-			msg := fmt.Sprintf("forbidden: %s\n", err.Error())
-			fmt.Fprintln(w, msg)
-			log.Println(msg)
 			return
 		}
 
-		pod, err := client.CoreV1().Pods(namespace).Get(context.TODO(), podName, metav1.GetOptions{})
+		if _, err := security.CheckPermissions(target.Namespace, target.Pod); err != nil {
+			LogError(w, http.StatusForbidden, fmt.Sprintln("forbidden:", err.Error()))
+			return
+		}
+
+		pod, err := client.CoreV1().Pods(target.Namespace).Get(context.TODO(), target.Pod, metav1.GetOptions{})
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			msg := fmt.Sprintf("Can't get pod info: %s\n", err.Error())
-			fmt.Fprintln(w, msg)
-			log.Println(msg)
+			LogError(w, http.StatusInternalServerError, fmt.Sprintln("error getting pod info:", err.Error()))
 			return
 		}
 
-		container := pod.Spec.Containers[0].Name
+		var container string
+		if target.Container != "" {
+			container = target.Container
+		} else {
+			container = pod.Spec.Containers[0].Name
+		}
 		logOptions := &v1.PodLogOptions{
 			Container:  container,
 			Follow:     false,
@@ -86,9 +86,8 @@ func makeHandler(client kubernetes.Interface) http.HandlerFunc {
 
 		logs, err := logs.ReadLogs(client, pod.Namespace, pod.Name, logOptions)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintln(w, err.Error())
-			log.Println(err.Error())
+			LogError(w, http.StatusInternalServerError, fmt.Sprintln("error reading logs:", err.Error()))
+			return
 		}
 		fmt.Fprintln(w, logs)
 	}
