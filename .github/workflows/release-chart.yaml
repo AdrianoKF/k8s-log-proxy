@@ -41,7 +41,7 @@ jobs:
         ./cr index \
             --owner "$owner" \
             --git-repo "$repo" \
-            --release-name-template "{{ .Version }}" \
+            --release-name-template "Helm chart v{{ .Version }}" \
             --index-path ./index.yaml \
             --charts-repo https://$owner.github.io/$repo \
             --push
