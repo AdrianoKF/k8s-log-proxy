@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -Eeux
+set -Eeu
 
 CHART_YAML=./deploy/chart/k8s-log-proxy/Chart.yaml
 
@@ -20,4 +20,4 @@ sed -ri "$PATTERN" "$CHART_YAML"
 git add "$CHART_YAML"
 git commit -m"chore: Release v$NEW_VERSION"
 git tag "v$NEW_VERSION"
-git push --follow-tags
+git push --tags origin :
