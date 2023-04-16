@@ -2,6 +2,22 @@ apiVersion: v1
 entries:
   k8s-log-proxy:
   - apiVersion: v2
+    appVersion: v0.3.4
+    created: "2023-04-16T11:35:49.003013973Z"
+    description: Helm chart for k8s-log-proxy
+    digest: 023b3215a7a129073be87c5bf300e2d3f5d1260062bf3eb7727df57aa4a85054
+    home: https://github.com/AdrianoKF/k8s-log-proxy
+    maintainers:
+    - name: AdrianoKF
+      url: https://github.com/AdrianoKF
+    name: k8s-log-proxy
+    sources:
+    - https://github.com/AdrianoKF/k8s-log-proxy.git
+    type: application
+    urls:
+    - https://github.com/AdrianoKF/k8s-log-proxy/releases/download/0.3.4/k8s-log-proxy-0.3.4.tgz
+    version: 0.3.4
+  - apiVersion: v2
     appVersion: v0.3.3
     created: "2023-04-07T09:51:06.97542954Z"
     description: Helm chart for k8s-log-proxy
@@ -113,4 +129,4 @@ entries:
     urls:
     - https://adrianokf.github.io/k8s-log-proxy/k8s-log-proxy-0.1.0.tgz
     version: 0.1.0
-generated: "2023-04-07T09:51:06.975755543Z"
+generated: "2023-04-16T11:35:49.003043273Z"
