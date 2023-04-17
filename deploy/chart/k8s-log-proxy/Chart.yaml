@@ -10,6 +10,6 @@ home: "https://github.com/AdrianoKF/k8s-log-proxy"
 sources:
   - "https://github.com/AdrianoKF/k8s-log-proxy.git"
 
-version: 0.3.8
+version: 0.3.9
 
-appVersion: "v0.3.8"
+appVersion: "v0.3.9"
