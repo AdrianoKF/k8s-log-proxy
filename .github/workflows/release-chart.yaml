@@ -18,6 +18,7 @@ jobs:
       env:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         CR_VERSION: "1.5.0"
+        RELEASE_NAME_TEMPLATE: "Helm chart {{ .Version }}"
       run: |
         curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v${CR_VERSION}/chart-releaser_${CR_VERSION}_linux_amd64.tar.gz"
         tar -xzf cr.tar.gz cr
@@ -33,7 +34,7 @@ jobs:
         ./cr upload \
             --owner "$owner" \
             --git-repo "$repo" \
-            --release-name-template "{{ .Version }}"
+            --release-name-template "$RELEASE_NAME_TEMPLATE"
 
         # update index and push to Github Pages
         git config user.email "$owner@users.noreply.github.com"
@@ -41,8 +42,7 @@ jobs:
         ./cr index \
             --owner "$owner" \
             --git-repo "$repo" \
-            --release-name-template "Helm chart v{{ .Version }}" \
+            --release-name-template "$RELEASE_NAME_TEMPLATE" \
             --index-path ./index.yaml \
-            --charts-repo https://$owner.github.io/$repo \
             --push
       
