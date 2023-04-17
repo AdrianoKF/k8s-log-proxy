@@ -19,5 +19,5 @@ sed -ri "$PATTERN" "$CHART_YAML"
 
 git add "$CHART_YAML"
 git commit -m"chore: Release v$NEW_VERSION"
-git tag "v$NEW_VERSION"
+git tag "$NEW_VERSION"
 git push --tags origin :
